@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+ use Illuminate\Http\Request;  
+ use Illuminate\Support\Facades\Auth;  
+ use Illuminate\Support\Facades\Cookie;
+ use GuzzleHttp\Client; 
+
+class LoginController extends Controller
+{
+    /*
+    |--------------------------------------------------------------------------
+    | Login Controller
+    |--------------------------------------------------------------------------
+    |
+    | This controller handles authenticating users for the application and
+    | redirecting them to your home screen. The controller uses a trait
+    | to conveniently provide its functionality to your applications.
+    |
+    */
+
+    use AuthenticatesUsers;
+
+    /**
+     * Where to redirect users after login.
+     *
+     * @var string
+     */
+    protected $redirectTo = '/';
+
+    protected $myAttempts ;
+
+    protected function validateLogin(Request $request)
+    {
+
+        
+        session()->put('login.attempts', $this->limiter()->attempts($this->throttleKey($request))); 
+
+		$arr = [
+			$this->username() => 'required', 
+			'password' => 'required',
+			'g-recaptcha-response' => 'required|recaptcha'
+		];
+        
+
+        $this->validate($request, $arr);
+    }
+
+   /**
+     * The user has been authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  mixed  $user
+     * @return mixed
+     */
+    protected function authenticated($request, $user)
+    {
+      
+        if(!in_array($user->role_id, array(1,3,999))) { // or whatever status column name and value indicates a blocked user
+
+            $message = 'Hey!!!! Please use your app. You are not authorized to access the web!!!';
+
+            // Log the user out.
+            $this->logout($request);
+
+            // Return them to the log in form.
+            return redirect()->back()
+                ->withInput($request->only($this->username(), 'remember'))
+                ->withErrors([
+                    // This is where we are providing the error message.
+                    $this->username() => $message,
+                ]);
+        }
+    }
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct(Request $request)
+    {
+        $this->middleware('guest')->except('logout');
+        //$this->myAttempts = $this->limiter()->attempts($this->throttleKey($request));
+        
+    }
+
+     protected function sendLoginResponse(Request $request) {
+     $customRememberMeTimeInMinutes = 300;  
+     $rememberTokenCookieKey = Auth::getRecallerName();  
+     Cookie::queue($rememberTokenCookieKey, Cookie::get($rememberTokenCookieKey), $customRememberMeTimeInMinutes);  
+     $request->session()->regenerate();  
+     $this->clearLoginAttempts($request);  
+     session()->forget('login.attempts'); // clear attempts
+
+     return $this->authenticated($request, $this->guard()->user())  
+         ?: redirect()->intended($this->redirectPath());  
+     }  
+
+
+
+   
+}

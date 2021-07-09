@@ -13,6 +13,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE, PATCH');
+header('Access-Control-Allow-Headers: Content-Type, X-Auth-Token, Origin, Authorization');
+
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/user/{id}', [App\Http\Controllers\UserController::class, 'index'])->name('user');
+Route::get('/user', [App\Http\Controllers\AuthController::class, 'getAuthUser'])->name('getAuthUser');
+Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register');
+Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
+Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+Route::put('/user/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('userupdate');
+Route::post('/signup', [App\Http\Controllers\UserController::class, 'signup'])->name('signup');
+Route::post('/send-otp', [App\Http\Controllers\AuthController::class, 'setOtpVerification'])->name('setOtpVerification');
