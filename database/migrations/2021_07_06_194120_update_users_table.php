@@ -14,7 +14,7 @@ class UpdateUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function($table) {
-			$table->bigInteger('mobile')->after('password')->nullable();
+			$table->bigInteger('mobile')->after('password')->unique();
 			$table->string('reffarel')->after('mobile')->nullable();
 			$table->string('gender')->after('mobile')->nullable();
 			$table->string('cast')->after('mobile')->nullable();

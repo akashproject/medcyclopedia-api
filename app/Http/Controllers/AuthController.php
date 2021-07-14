@@ -17,6 +17,7 @@ class AuthController extends Controller
 
     public function setOtpVerification(Request $request)
     {
+      $mobile = $request->mobile;
       $response = true;
       $otp = 123456;
       if($response){
@@ -32,16 +33,19 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-      $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'mobile' => $request->mobile,
-        'physical_status' => $request->physical_status,
-        'password' => bcrypt($request->password),
-      ]);
-      $token = auth()->login($user);
-
-      return $this->respondWithToken($token);
+      try {
+        $user = User::create([
+          'name' => $request->name,
+          'email' => $request->email,
+          'mobile' => $request->mobile,
+          'physical_status' => $request->physical_status,
+          'password' => bcrypt($request->password),
+        ]);
+        $token = auth()->login($user);
+        return $this->respondWithToken($token);
+      } catch(\Illuminate\Database\QueryException $e){
+        return response()->json(['error' => $e->errorInfo[2]], 401);
+      }
     }
 
     public function login(Request $request)

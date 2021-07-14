@@ -8,29 +8,17 @@ use App\Models\User;
 
 class UserController extends Controller
 {
-    /**
-     * Show the profile for a given user.
-     *
-     * @param  int  $id
-     * @return \Illuminate\View\View
-     */
-	 public function index($id)
-    {
-		
-		$user = User::find($id);
-		return response()->json($user);
-	}
 	
-	public function signup(Request $request) {
-    $user = User::create([
-      'name' => $request->name,
-      'email' => $request->email,
-      'password' => bcrypt($request->password),
-    ]);
-
-    $token = auth()->login($user);
-
-    return $this->respondWithToken($token);
+	public function updateprofile(Request $request) {
+    $requestData = $request->all();
+    $loggedinUser = auth()->user();
+    try {
+      $user = User::findOrFail($loggedinUser->id);
+      $user->update($requestData);
+      return response()->json($user, 200);
+    } catch(\Illuminate\Database\QueryException $e){
+      return response()->json(['error' => $e->errorInfo[2]], 401);
+    }
 	}
    
 }

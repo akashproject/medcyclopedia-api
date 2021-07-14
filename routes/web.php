@@ -26,6 +26,10 @@ Route::get('/user', [App\Http\Controllers\AuthController::class, 'getAuthUser'])
 Route::post('/register', [App\Http\Controllers\AuthController::class, 'register'])->name('register');
 Route::post('/login', [App\Http\Controllers\AuthController::class, 'login'])->name('login');
 Route::get('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
-Route::put('/user/{id}', [App\Http\Controllers\UserController::class, 'update'])->name('userupdate');
+Route::put('/updateprofile', [App\Http\Controllers\UserController::class, 'updateprofile'])->name('userupdate');
 Route::post('/signup', [App\Http\Controllers\UserController::class, 'signup'])->name('signup');
 Route::post('/send-otp', [App\Http\Controllers\AuthController::class, 'setOtpVerification'])->name('setOtpVerification');
+
+//Institutes
+Route::post('/institutes', [App\Http\Controllers\InstituteController::class, 'list'])->name('institutes');
+Route::get('/institute/{id}', [App\Http\Controllers\InstituteController::class, 'show'])->name('institute');
