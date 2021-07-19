@@ -8,6 +8,8 @@ use App\Models\Institute;
 use App\Models\InstituteCourses;
 use App\Models\State;
 use App\Models\Course;
+use App\Models\Country;
+use App\Models\Bank;
 
 class InstituteController extends Controller
 {
@@ -72,6 +74,28 @@ class InstituteController extends Controller
         try {
             $state = State::all();
             return response()->json($state,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
+        }
+        
+    }
+
+    public function countries()
+    {
+        try {
+            $country = Country::all();
+            return response()->json($country,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
+        }
+        
+    }
+
+    public function banks()
+    {
+        try {
+            $bank = Bank::all();
+            return response()->json($bank,$this->_statusOK);
         } catch(\Illuminate\Database\QueryException $e){
             return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
         }
