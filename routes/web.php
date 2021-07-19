@@ -33,3 +33,6 @@ Route::post('/send-otp', [App\Http\Controllers\AuthController::class, 'setOtpVer
 //Institutes
 Route::post('/institutes', [App\Http\Controllers\InstituteController::class, 'list'])->name('institutes');
 Route::get('/institute/{id}', [App\Http\Controllers\InstituteController::class, 'show'])->name('institute');
+Route::get('/institute-courses/{id}', [App\Http\Controllers\InstituteController::class, 'instituteCourses'])->name('instituteCourses');
+Route::get('/states', [App\Http\Controllers\InstituteController::class, 'states'])->name('states');
+Route::get('/courses', [App\Http\Controllers\InstituteController::class, 'courses'])->name('courses');
