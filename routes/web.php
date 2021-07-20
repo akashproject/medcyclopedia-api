@@ -38,3 +38,7 @@ Route::get('/courses', [App\Http\Controllers\InstituteController::class, 'course
 Route::get('/states', [App\Http\Controllers\InstituteController::class, 'states'])->name('states');
 Route::get('/countries', [App\Http\Controllers\InstituteController::class, 'countries'])->name('countries');
 Route::get('/banks', [App\Http\Controllers\InstituteController::class, 'banks'])->name('banks');
+
+//Exams
+Route::get('/exams/{id}', [App\Http\Controllers\ExamController::class, 'getExams'])->name('getExams');
+Route::get('/view-exam/{id}', [App\Http\Controllers\ExamController::class, 'viewExam'])->name('viewExam');
