@@ -42,3 +42,4 @@ Route::get('/banks', [App\Http\Controllers\InstituteController::class, 'banks'])
 //Exams
 Route::get('/exams/{id}', [App\Http\Controllers\ExamController::class, 'getExams'])->name('getExams');
 Route::get('/view-exam/{id}', [App\Http\Controllers\ExamController::class, 'viewExam'])->name('viewExam');
+Route::post('/booking', [App\Http\Controllers\BookingController::class, 'create'])->name('viewExam');
