@@ -1,4 +1,5 @@
 Medcyclopedia Api List
+Medcyclopedia Api List
     #User Login
         url : http://127.0.0.1:8000/login
         method : POST
@@ -75,7 +76,12 @@ Medcyclopedia Api List
 		
 	[{"id":1,"title":"WBJEE JENPAUH or JENPAS (West Bengal Joint Entrance Examinations Board - Joint Entrance Test for Nursing, Paramedical & Allied Sciences (Under Graduate)","description":"1) The candidate must pass (10+2) examination from any recognized Board\/Council 2) Candidate must be from and also pass in science Stream. 3) Candidate must pass the PCB (Physics, Chemistry & Biology) subjects with individual pass marks (in both theory and practical separately, wherever applicable). 4) 45% Minimum aggregate for general candidates, considering above PCB subjects. 5) 40% Minimum aggregate for SC\/ST\/OBC-A\/OBC-B\/PwD candidates. 6) Age Limit should be from 17 years (as on 31\/12\/2020)","application_procedure":"Physics & Chemistry - 100 Marks,Biology - 100 Marks (Each paper will contain fifty (50) questions. All questions will be of Multiple- Choice Question (MCQ) type, with four answer options. Time for each paper is 2 hours.).Scoring Pattern - Correct Answer (2 Marks+), Incorrect Answer (1\/2 marks deducted) (25% negative marking), Not attended question - No Marks (0 marking)","course_id":8,"subject_marking":"Physics & Chemistry - 100 Marks,Biology - 100 Marks (Each paper will contain fifty (50) questions. All questions will be of Multiple- Choice Question (MCQ) type, with four answer options. Time for each paper is 2 hours.).Scoring Pattern - Correct Answer (2 Marks+), Incorrect Answer (1\/2 marks reducted) (25% negative marking), Not attended question - No Marks (0 marking)","time":"","duration":"PCB Each Paper 2 Hours","fees":"Rs.500 for application fee","cutofflastyear":"134","important_date_current_year":"Sep 13, 2020","link":"https:\/\/wbjeeb.nic.in","important_date_last_year":"Jun 30, 2019","created_at":"2021-07-21T00:58:15.000000Z","updated_at":"2021-07-21T00:58:15.000000Z"}]
 	
+	url : https://med.scriptcrown.com/api/institutes-countrywise/{id}
+	method : GET
 	
 	url : https://med.scriptcrown.com/api/booking
 		method : GET
 		'date' => '2021-07-24','time' => '10am - 5pm','media' => 'vedio','language' => 'English','order_id' => 'dsadklhd1321','payment_id' => 'sadsahdkashd123','payment_status' => 'success'
+		
+	
+	

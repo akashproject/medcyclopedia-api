@@ -10,6 +10,8 @@ use App\Models\State;
 use App\Models\Course;
 use App\Models\Country;
 use App\Models\Bank;
+use App\Models\Scholarship;
+use App\Models\NewsEvent;
 
 class InstituteController extends Controller
 {
@@ -28,6 +30,17 @@ class InstituteController extends Controller
             ->distinct()
             ->get();
         
+            return response()->json($instituteData,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
+        }
+        
+    }
+	
+	public function countrywise($id){
+        try {
+            $instituteData = Institute::where('country_id', $id)->get();
+           
             return response()->json($instituteData,$this->_statusOK);
         } catch(\Illuminate\Database\QueryException $e){
             return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
@@ -96,6 +109,28 @@ class InstituteController extends Controller
         try {
             $bank = Bank::all();
             return response()->json($bank,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
+        }
+        
+    }
+	
+	public function scholarships()
+    {
+        try {
+            $scholarship = Scholarship::all();
+            return response()->json($scholarship,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
+        }
+        
+    }
+	
+	public function newsevents()
+    {
+        try {
+            $newsevent = NewsEvent::all();
+            return response()->json($newsevent,$this->_statusOK);
         } catch(\Illuminate\Database\QueryException $e){
             return response()->json(['error' => $e->errorInfo[2]], $this->_statusErr);
         }

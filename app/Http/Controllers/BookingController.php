@@ -15,11 +15,13 @@ class BookingController extends Controller
 	public function create(Request $request) {
 		$requestData = $request->all();
 		try {
+			$requestData['date'] = date('Y-m-d', strtotime($requestData['date']));
+			
 			$booking = Booking::insertGetId($requestData);
-		return response()->json($booking, 201);
-		  return response()->json(['success'], $_statusOK);
+			return response()->json($booking, 201);
+		  return response()->json(['success'], 200);
 		} catch(\Illuminate\Database\QueryException $e){
-		  return response()->json(['error' => $e->errorInfo[2]], $_statusErr);
+		  return response()->json(['error' => $e->errorInfo[2]], 500);
 		}
 	}
 }
