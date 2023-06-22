@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Categories;
+use App\Models\Brand;
+
+class CommonController extends Controller
+{
+    //
+    public $_statusOK = 200;
+    public $_statusErr = 500;
+
+    public function categories(){
+        try {
+            $categories = Categories::where('status', '1')->get();
+            return response()->json($categories,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            
+        }
+    }
+
+    public function brands($id){
+        try {           
+            $brands = Brand::where('category_id', 'like', '%"' . $id . '"%')->orderBy('name', 'asc')->get();
+            return response()->json($brands,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            
+        }
+    }
+
+    public function topBrands(){
+        try {           
+            $tobSellingBrands = Brand::inRandomOrder()->limit(10)->get();
+            return response()->json($tobSellingBrands,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            
+        }
+        
+    }
+
+}

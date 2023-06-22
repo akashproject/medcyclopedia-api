@@ -1,0 +1,166 @@
+<?php
+
+
+namespace App\Http\Controllers;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Models\Question;
+use App\Models\Product;
+use App\Models\Brand;
+use App\Models\Accessories;
+use App\Models\Age;
+use App\Models\Condition;
+use App\Models\DeviceConfig;
+use App\Models\Series;
+use App\Models\ProductConfigPrice;
+
+class QuestionController extends Controller
+{
+    public $_statusOK = 200;
+    public $_statusErr = 500;
+    
+    public function index($category_id){       
+        try {
+            // if(isset($productData['config']) && $productData['config']){
+            //     // Device Configuration Price
+            //     $configPrice = DeviceConfig::select('price')
+            //     ->whereIn('id', $productData['config'])
+            //     ->get(); 
+
+            //     foreach($configPrice as $key => $value){
+            //         $veriationPrice += $value->price;
+            //     }
+
+            //     // Device Configuration Extra Price
+            //     $productConfigPrice = ProductConfigPrice::select('price')
+            //     ->where('product_id', '=', $productData['product_id'])
+            //     ->whereIn('config_id', $productData['config'])
+            //     ->get(); 
+            //     foreach($productConfigPrice as $key => $value){
+            //         $veriationPrice += $value->price;
+            //     }
+            // } else {
+            //     $veriationPrice = $productData['veriation_price'];
+            // }
+
+            // if(isset($productData['series_price']) && $productData['series_price'] != ''){
+            //     $veriationPrice += $value->price;
+            // }
+
+            $questions = Question::where('category_id', $category_id)->get();
+
+            return response()->json($questions,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+        }
+    }
+
+    public function givenAccessories($category_id){
+        $accessories = Accessories::where('category_id', $category_id)->get();
+        return response()->json($accessories,$this->_statusOK);
+    }
+
+    public function deviceAge($category_id){
+        $ages = Age::where('category_id', $category_id)->get();
+        return response()->json($ages,$this->_statusOK);
+    }
+
+    public function deviceCondition($category_id){
+        $conditions = Condition::where('category_id', $category_id)->get();
+        return response()->json($conditions,$this->_statusOK);
+
+    }
+
+    public function calculatePrice(Request $request){
+        
+        try {
+            $data = $request->all();   
+            $callculatedData = array();
+            $callculatedData['condition_id'] = $data['condition_id'];
+            $callculatedData['veriation_price'] = $data['veriation_price'];
+            $callculatedData['variation_type'] = (isset($data['variation_type']))?$data['variation_type']:'';
+            $callculatedData['question_id'] = json_decode($data['questions']);
+            $callculatedData['accessories'] = json_decode($data['accessories']);
+            $callculatedData['age_id'] = $data['age'];
+            $callculatedData['condition_id'] = $data['condition_id'];
+            $callculatedData['product_id'] = $data['product_id'];
+            
+            $category_id = $data['category_id'];
+
+            $veriation_price = (isset($callculatedData['veriation_price']))?$callculatedData['veriation_price']:0;
+                   
+            $sum_deduction = 0;
+            $brand_id = Product::find($callculatedData['product_id'])->brand_id;
+            
+            // Deduction calculation by question
+            foreach ($callculatedData['question_id'] as $key => $value) {
+                $question = Question::find($value);
+                $sum_deduction += $question->deducted_amount;
+                if($question->brand_id){
+                    $brands = json_decode($question->brand_id,true);
+                    if(in_array($brand_id, $brands)){
+                        $brand_extra_amount = ($question->extra_amount / 100) * $veriation_price;
+                        $sum_deduction += $brand_extra_amount;
+                    }   
+                }           
+            }
+
+           
+            // Deduction calculation by accessories
+            if(isset($callculatedData['accessories'])){
+                $notProvidedAccessories = DB::table('accessories')
+                                        ->select('accessories.brand_id','accessories.deducted_amount','accessories.extra_deducted_amount')
+                                        ->whereNotIn('id', $callculatedData['accessories'])
+                                        ->where('category_id', '=', $category_id)->get();
+
+                foreach ($notProvidedAccessories as $key => $notProvidedAccessory) {
+                    $sum_deduction += $notProvidedAccessory->deducted_amount;
+                    if($notProvidedAccessory->brand_id){
+                        $brands = json_decode($notProvidedAccessory->brand_id,true);
+                        if(in_array($brand_id, $brands)){
+                            $accessory_extra_amount = ($notProvidedAccessory->extra_deducted_amount / 100) * $veriation_price;
+                            $sum_deduction += $accessory_extra_amount;
+                        }   
+                    }
+                }
+            }
+
+            
+            // Deduction calculation by age
+            $age = Age::find($callculatedData['age_id']);
+            $sum_deduction += $age->deducted_amount;
+            $brands = json_decode($age->brand_id,true);
+            if(isset($brands)){
+                if(in_array($brand_id, $brands)){
+                    $age_extra_amount = ($age->extra_deducted_amount / 100) * $veriation_price;
+                    $sum_deduction += $age_extra_amount;
+                } 
+            }
+            
+
+            
+            // Deduction calculation by conditions
+            $condition = Condition::find($callculatedData['condition_id']);           
+            $sum_deduction += $condition->deducted_amount;          
+            $conditionBrands = json_decode($condition->brand_id,true);
+            
+            if(isset($conditionBrands)){
+                if(in_array($brand_id, $conditionBrands)){
+                    $condition_extra_amount = ($condition->extra_deducted_amount / 100) * $veriation_price;
+                    $sum_deduction += $condition_extra_amount;
+                } 
+            }
+            
+           
+            $exact_price = $veriation_price - $sum_deduction;
+            $callculatedData['exact_price'] = round($exact_price);
+            return response()->json($callculatedData,$this->_statusOK);
+        } catch(\Illuminate\Database\QueryException $e){
+            return response()->json($e,$this->_statusErr);
+        }
+        
+    }
+
+
+
+}
